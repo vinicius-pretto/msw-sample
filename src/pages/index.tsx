@@ -15,7 +15,7 @@ export default function Home() {
   console.log("users", users);
 
   useEffect(() => {
-    fetch("/api/users")
+    fetch("http://localhost:3005/api/users")
       .then((response) => response.json())
       .then((usersReponse: UsersResponse) => {
         setUsers(usersReponse.users);
