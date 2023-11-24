@@ -1,4 +1,5 @@
 import { User } from "@/types/user";
+import axios from "axios";
 import { Inter } from "next/font/google";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -9,18 +10,30 @@ type UsersResponse = {
   users: User[];
 };
 
-export default function Home() {
+export interface HomeProps {
+  users: User[];
+  isMocksEnabled: boolean;
+}
+
+export default function Home({ isMocksEnabled }: HomeProps) {
   const [users, setUsers] = useState<User[]>([]);
 
-  console.log("users", users);
-
   useEffect(() => {
-    fetch("http://localhost:3005/api/users")
-      .then((response) => response.json())
-      .then((usersReponse: UsersResponse) => {
-        setUsers(usersReponse.users);
-      });
-  }, []);
+    const fetchUsers = async () => {
+      const response = await axios.get<UsersResponse>(
+        "http://localhost:3005/api/users"
+      );
+      setUsers(response.data.users);
+    };
+
+    if (isMocksEnabled) {
+      import("../mocks/setupMocks")
+        .then(({ setupMocks }) => setupMocks())
+        .then(fetchUsers);
+    } else {
+      fetchUsers();
+    }
+  }, [isMocksEnabled]);
 
   return (
     <>
@@ -54,3 +67,16 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps = async () => {
+  // const response = await axios.get<UsersResponse>(
+  //   "http://localhost:3005/api/users"
+  // );
+
+  return {
+    props: {
+      isMocksEnabled: process.env.MSW_MOCKS === "enabled",
+      // users: response.data.users,
+    },
+  };
+};

@@ -10,8 +10,9 @@
     "test:e2e": "cypress open"
   },
   "dependencies": {
-    "msw": "^1.2.1",
-    "next": "14.0.2",
+    "axios": "^1.6.2",
+    "msw": "^2.0.8",
+    "next": "^14.0.3",
     "react": "^18",
     "react-dom": "^18"
   },
